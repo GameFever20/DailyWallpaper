@@ -5,9 +5,8 @@
     android:id="@+id/content_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-     app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="app.studio.crafty.wallpaper.daily.dailywallpaper.MainActivity"
-
     tools:showIn="@layout/app_bar_main">
 
 
@@ -22,14 +21,33 @@
         android:layout_marginStart="0dp"
         app:srcCompat="@drawable/ic_menu_send" />
 
-    <com.luseen.spacenavigation.SpaceNavigationView
-        android:id="@+id/space"
+
+    <LinearLayout
+        android:id="@+id/space_viewGroup_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="bottom"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="32dp"
-        />
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+
+        <com.luseen.spacenavigation.SpaceNavigationView
+            android:id="@+id/space"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            />
+
+
+        <View
+            android:id="@+id/space_bottomView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
+
+        </View>
+
+    </LinearLayout>
 
 
 </FrameLayout>

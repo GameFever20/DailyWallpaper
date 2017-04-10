@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "app.studio.crafty.wallpaper.daily.dailywallpaper"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -31,5 +31,13 @@ dependencies {
     compile 'com.android.volley:volley:1.0.0'
 
     compile 'com.github.armcha:Space-Navigation-View:1.6.0'
+
+    compile 'org.michaelevans.colorart:library:0.0.3'
+
+
+    compile 'com.firebase:firebase-jobdispatcher:0.6.0'
+
+
+
 
 }
