@@ -457,6 +457,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void onWallSetting() {
+
     }
 
     private void onCategoryClick(String category) {
