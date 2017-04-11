@@ -3,33 +3,72 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_featured"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="@string/featured" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_random"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="@string/random" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_nature"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="@string/nature" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_food"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="@string/food" />
+        <item
+            android:id="@+id/nav_technology"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/technology" />
+        <item
+            android:id="@+id/nav_people"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/people" />
+        <item
+            android:id="@+id/nav_buildings"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/buildings" />
+        <item
+            android:id="@+id/nav_objects"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/object" />
+
+
+
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Dynamic WallPaper">
         <menu>
+            <item
+                android:id="@+id/nav_wall_setting"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Auto WallPaper" />
+        </menu>
+    </item>
+
+    <item android:title="Share">
+        <menu>
+            <item
+                android:id="@+id/nav_send_wall"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send This Wall" />
+            <item
+                android:id="@+id/nav_feedback"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Suggestion" />
+
             <item
                 android:id="@+id/nav_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="Share" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_rate_us"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="Rate Us" />
+
+
         </menu>
     </item>
 

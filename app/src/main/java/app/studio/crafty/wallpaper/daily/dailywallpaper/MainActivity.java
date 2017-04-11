@@ -3,18 +3,24 @@ package app.studio.crafty.wallpaper.daily.dailywallpaper;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
@@ -49,6 +55,7 @@ import com.luseen.spacenavigation.SpaceOnClickListener;
 import org.michaelevans.colorart.library.ColorArt;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -70,6 +77,17 @@ public class MainActivity extends AppCompatActivity
     SpaceNavigationView spaceNavigationView;
     boolean isAutoSettingCurrentItem = false;
     boolean isAutoSettingCurrentItem1 = false;
+
+    SwipeRefreshLayout swipeRefreshLayout;
+
+    String urlString = "https://source.unsplash.com/featured/1080x1920";
+    String resolution = "";
+
+    int showAdCount=0;
+
+    public boolean isSaved =false;
+
+
 
 
     @Override
@@ -107,8 +125,14 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
+
+
+
+
         imageView = (ImageView) findViewById(R.id.imageView2);
-        loadImage();
+        refreshWallPaper();
+
 
         spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
         spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
@@ -122,6 +146,8 @@ public class MainActivity extends AppCompatActivity
             public void onCentreButtonClick() {
                 //Toast.makeText(MainActivity.this, "onCentreButtonClick", Toast.LENGTH_SHORT).show();
                 refreshWallPaper();
+
+
             }
 
             @Override
@@ -133,8 +159,7 @@ public class MainActivity extends AppCompatActivity
 
                         setAsWallPaper();
                     }
-                    isAutoSettingCurrentItem1 =false;
-
+                    isAutoSettingCurrentItem1 = false;
 
 
                 } else if (itemIndex == 0) {
@@ -159,13 +184,12 @@ public class MainActivity extends AppCompatActivity
                     }
                     isAutoSettingCurrentItem = false;
 
-                }
-                else if (itemIndex==1){
+                } else if (itemIndex == 1) {
                     if (!isAutoSettingCurrentItem1) {
 
                         setAsWallPaper();
                     }
-                    isAutoSettingCurrentItem1 =false;
+                    isAutoSettingCurrentItem1 = false;
 
 
                 }
@@ -191,14 +215,43 @@ public class MainActivity extends AppCompatActivity
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(spaceNavigationView.getVisibility()==View.INVISIBLE
-                        || spaceNavigationView.getVisibility()== View.GONE){
+                if (spaceNavigationView.getVisibility() == View.INVISIBLE
+                        || spaceNavigationView.getVisibility() == View.GONE) {
                     spaceNavigationView.setVisibility(View.VISIBLE);
                 }
             }
         });
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshWallPaper();
 
+            }
+        });
+
+        fetchDisplayInfo();
+
+    }
+
+    private void fetchDisplayInfo() {
+
+        if (Build.VERSION.SDK_INT >16) {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
+            int width = displayMetrics.widthPixels;
+            int height = displayMetrics.heightPixels;
+            resolution = String.valueOf(width)+"x"+String.valueOf(height);
+            //Toast.makeText(this, "Resolution is "+resolution, Toast.LENGTH_SHORT).show();
+        } else {
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int width = displayMetrics.widthPixels;
+            int height = displayMetrics.heightPixels;
+            resolution = String.valueOf(width)+"x"+String.valueOf(height);
+           // Toast.makeText(this, "Resolution is "+resolution, Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     private void setSpaceViewColor() {
@@ -261,6 +314,7 @@ public class MainActivity extends AppCompatActivity
 
     private void refreshWallPaper() {
         loadImage();
+         swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
@@ -279,7 +333,6 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -302,23 +355,123 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
 
-        } else if (id == R.id.nav_slideshow) {
+        switch (id){
+            case R.id.nav_featured :
+                onFeaturedClick();
+                break;
+            case R.id.nav_random :
+                onRandomClick();
+                break;
+            case R.id.nav_nature :
+                onCategoryClick("nature");
+                break;
+            case R.id.nav_food :
+                onCategoryClick("food");
+                break;
+            case R.id.nav_people :
+                onCategoryClick("people");
+                break;
+            case R.id.nav_buildings :
+                onCategoryClick("buildings");
+                break;
+            case R.id.nav_objects :
+                onCategoryClick("objects");
+                break;
+            case R.id.nav_technology :
+                onCategoryClick("technology");
+                break;
+            case R.id.nav_wall_setting:
+                onWallSetting();
+                break;
+            case R.id.nav_send_wall:
+                onWallSendClick();
+                break;
+            case R.id.nav_rate_us:
+                onRateUsClick();
+                break;
+            case R.id.nav_share:
+                onShareClick();
+                break;
+            case R.id.nav_feedback:
+                onFeedbackClick();
+                break;
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void onFeedbackClick() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"acraftystudio@gmail.com"});
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Suggestion for Daily Wallpaper App");
+        intent.putExtra(Intent.EXTRA_TEXT, "Your suggestion here \n");
+
+        intent.setType("message/rfc822");
+
+        startActivity(Intent.createChooser(intent, "Select Email App"));
+    }
+
+    private void onShareClick() {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Get Awsome Wallpaper and automaticall change wallpaper daily");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,"https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper" );
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
+    }
+
+    private void onWallSendClick() {
+        Intent share = new Intent(Intent.ACTION_SEND);
+        share.setType("image/jpeg");
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        File f = new File(Environment.getExternalStorageDirectory() +"/"+getString(R.string.app_name) );
+        f.mkdirs();
+        f = new File(Environment.getExternalStorageDirectory() +"/"+getString(R.string.app_name) + File.separator + "Shared.jpg");
+
+        try {
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(f.getPath()));
+        share.putExtra(Intent.EXTRA_TEXT , "Get Full HD WallPaper and auto - change wallpaper daily  \n https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
+        startActivity(Intent.createChooser(share, "Share Image"));
+    }
+
+    private void onRateUsClick() {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper")));
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void onWallSetting() {
+    }
+
+    private void onCategoryClick(String category) {
+        urlString= "https://source.unsplash.com/category/"+category+"/"+resolution;
+        refreshWallPaper();
+    }
+
+    private void onRandomClick() {
+        urlString = "https://source.unsplash.com/random/"+resolution;
+        refreshWallPaper();
+    }
+
+    private void onFeaturedClick() {
+        urlString = "https://source.unsplash.com/featured/"+resolution;
+        refreshWallPaper();
     }
 
     @Override
@@ -336,7 +489,7 @@ public class MainActivity extends AppCompatActivity
 // If you are using normal ImageView
         String url = "https://source.unsplash.com/category/nature/1080x1920";
 
-        imageLoader.get(url, new ImageLoader.ImageListener() {
+        imageLoader.get(urlString, new ImageLoader.ImageListener() {
 
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -352,9 +505,20 @@ public class MainActivity extends AppCompatActivity
                     imageBitmap = response.getBitmap();
                     setSpaceViewColor();
                     Toast.makeText(MainActivity.this, "Image loaded", Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                    isSaved=false;
+                    showAdCount++;
+                    checkAdShown();
                 }
             }
         });
+    }
+
+    private void checkAdShown() {
+        if(showAdCount > 4){
+            //Ads showing code here
+            showAdCount=0;
+        }
     }
 
     public void setAsWallPaper() {
@@ -372,9 +536,9 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private boolean saveToInternalStorage(Bitmap bitmapImage, String filename) {
+    private String saveToInternalStorage(Bitmap bitmapImage, String filename) {
         //get path to external storage (SD card)
-        String iconsStoragePath = Environment.getExternalStorageDirectory() + "/myAppDir/myImages/";
+        String iconsStoragePath = Environment.getExternalStorageDirectory() + "/"+getString(R.string.app_name)+"/MyWallPaper/";
         File sdIconStorageDir = new File(iconsStoragePath);
 
         //create storage directories, if they don't exist
@@ -394,13 +558,14 @@ public class MainActivity extends AppCompatActivity
 
         } catch (FileNotFoundException e) {
             Log.w("TAG", "Error saving image file: " + e.getMessage());
-            return false;
+            return sdIconStorageDir.getPath();
         } catch (IOException e) {
             Log.w("TAG", "Error saving image file: " + e.getMessage());
-            return false;
+            return sdIconStorageDir.getPath();
         }
+        isSaved=true;
 
-        return true;
+        return sdIconStorageDir.getAbsolutePath();
 
     }
 
@@ -434,7 +599,7 @@ public class MainActivity extends AppCompatActivity
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
-    public void scheduleWallChangeJob(){
+    public void scheduleWallChangeJob() {
 
         // Create a new dispatcher using the Google Play driver.
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
