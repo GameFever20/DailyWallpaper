@@ -1,5 +1,6 @@
 package app.studio.crafty.wallpaper.daily.dailywallpaper;
 
+import android.app.NotificationManager;
 import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,6 +16,8 @@ import java.io.IOException;
 
 import utils.AppController;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
 /**
  * Created by bunny on 13/04/17.
  */
@@ -26,8 +29,16 @@ public class DailyWallPaperReceiver extends BroadcastReceiver {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
-        mBuilder.setContentTitle("Notification Alert, Click Me!");
-        mBuilder.setContentText("Hi, This is Android Notification Detail!");
+        mBuilder.setContentTitle(context.getString(R.string.app_name));
+        mBuilder.setContentText("Your Daily wallpaper Changed via reciever");
+
+        int mNotificationId = 123;
+// Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr =
+                (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
 
         ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
@@ -64,4 +75,5 @@ public class DailyWallPaperReceiver extends BroadcastReceiver {
         });
 
     }
+
 }

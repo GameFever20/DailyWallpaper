@@ -1,5 +1,6 @@
 package app.studio.crafty.wallpaper.daily.dailywallpaper;
 
+import android.app.NotificationManager;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -20,6 +21,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.NotificationCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -58,6 +60,7 @@ import com.google.android.gms.ads.NativeExpressAdView;
 import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
+import com.tapadoo.alerter.Alerter;
 
 import org.honorato.multistatetogglebutton.MultiStateToggleButton;
 import org.honorato.multistatetogglebutton.ToggleButton;
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity
 
     SwipeRefreshLayout swipeRefreshLayout;
 
+    //want to change initial
     String urlString = "https://source.unsplash.com/featured/1080x1920";
     String resolution = "";
 
@@ -139,7 +143,7 @@ public class MainActivity extends AppCompatActivity
 
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
 
-
+        fetchDisplayInfo();
         imageView = (ImageView) findViewById(R.id.imageView2);
         refreshWallPaper();
 
@@ -156,6 +160,7 @@ public class MainActivity extends AppCompatActivity
             public void onCentreButtonClick() {
                 //Toast.makeText(MainActivity.this, "onCentreButtonClick", Toast.LENGTH_SHORT).show();
                 refreshWallPaper();
+                checkAdShown();
 
 
             }
@@ -166,7 +171,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (itemIndex == 1) {
                     if (!isAutoSettingCurrentItem1) {
-
+                        showAlert("WallPaper Set ","");
                         setAsWallPaper();
                     }
                     isAutoSettingCurrentItem1 = false;
@@ -175,7 +180,8 @@ public class MainActivity extends AppCompatActivity
                 } else if (itemIndex == 0) {
                     if (!isAutoSettingCurrentItem) {
                         if (!isSaved) {
-                            Toast.makeText(MainActivity.this, "Image saved in " + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MainActivity.this, "Image saved in " + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
+                            showAlert("WallPaper Saved ",saveToInternalStorage(imageBitmap, "Wall_"));
                             //spaceNavigationView.setCentreButtonSelected();
                             //scheduleWallChangeJob(3600);
                             isSaved = true;
@@ -192,8 +198,9 @@ public class MainActivity extends AppCompatActivity
                 if (itemIndex == 0) {
                     if (!isAutoSettingCurrentItem) {
                         if (!isSaved) {
-                            Toast.makeText(MainActivity.this, "Image saved in reselected" + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
+                            //Toast.makeText(MainActivity.this, "Image saved in reselected" + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
                             //spaceNavigationView.setCentreButtonSelected();
+                            showAlert("WallPaper Saved ",saveToInternalStorage(imageBitmap, "Wall_"));
                             isSaved = true;
                         }
                     }
@@ -250,7 +257,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        fetchDisplayInfo();
+
 
         initializeBottomSheet();
         
@@ -344,7 +351,7 @@ public class MainActivity extends AppCompatActivity
                 scheduleWallChangeJob(3600 * 6);
                 break;
             case 3:
-                scheduleWallChangeJob(3600 * 3);
+                scheduleWallChangeJob(1800 );
                 break;
             default:
                 scheduleWallChangeJob(3600 * 24);
@@ -398,6 +405,8 @@ public class MainActivity extends AppCompatActivity
         }catch(Exception e){
             e.printStackTrace();
         }
+        urlString = "https://source.unsplash.com/featured/" + resolution;
+
 
 
     }
@@ -635,6 +644,8 @@ public class MainActivity extends AppCompatActivity
     public void loadImage() {
 
 
+        Toast.makeText(this, "Loading WallPaper...", Toast.LENGTH_SHORT).show();
+
         ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
 
@@ -660,10 +671,26 @@ public class MainActivity extends AppCompatActivity
                     swipeRefreshLayout.setRefreshing(false);
                     isSaved = false;
 
-                    checkAdShown();
+
                 }
             }
         });
+    }
+
+    private void showAlert(String s, String s1) {
+        Alerter.create(MainActivity.this)
+                .setTitle(s)
+                .setDuration(5000)
+                .setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                    }
+                })
+                .show();
+
+        //                .setBackgroundColor(new ColorArt(imageBitmap).getBackgroundColor())
+
+
     }
 
     private void checkAdShown() {
@@ -692,6 +719,19 @@ public class MainActivity extends AppCompatActivity
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        mBuilder.setContentTitle(getString(R.string.app_name));
+        mBuilder.setContentText("Your Daily wallpaper Changed");
+
+        int mNotificationId = 123;
+// Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
 
 
     }
@@ -725,6 +765,7 @@ public class MainActivity extends AppCompatActivity
             return sdIconStorageDir.getPath();
         }
         isSaved = true;
+
 
         return sdIconStorageDir.getAbsolutePath();
 
@@ -798,8 +839,5 @@ public class MainActivity extends AppCompatActivity
         dispatcher.mustSchedule(myJob);
 
     }
-    
-    
-
 
 }

@@ -48,5 +48,6 @@ dependencies {
     compile 'com.google.firebase:firebase-ads:10.2.1'
 
     compile 'org.honorato.multistatetogglebutton:multistatetogglebutton:0.2.2'
+    compile 'com.tapadoo.android:alerter:1.0.6'
 }
 apply plugin: 'com.google.gms.google-services'
