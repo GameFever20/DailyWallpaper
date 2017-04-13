@@ -680,6 +680,7 @@ public class MainActivity extends AppCompatActivity
     private void showAlert(String s, String s1) {
         Alerter.create(MainActivity.this)
                 .setTitle(s)
+                .setText(s1)
                 .setDuration(5000)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
