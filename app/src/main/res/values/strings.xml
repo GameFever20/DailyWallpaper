@@ -87,4 +87,6 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_setting">SettingActivity</string>
+
+    <string name="interstitial_ad_unit_id">ca-app-pub-8455191357100024/2379653598</string>
 </resources>

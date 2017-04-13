@@ -1,40 +1,42 @@
 package app.studio.crafty.wallpaper.daily.dailywallpaper;
 
 import android.app.WallpaperManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.firebase.jobdispatcher.JobParameters;
-import com.firebase.jobdispatcher.JobService;
 
 import java.io.IOException;
 
 import utils.AppController;
 
 /**
- * Created by bunny on 11/04/17.
+ * Created by bunny on 13/04/17.
  */
 
-public class WallPaperChangerJob extends JobService {
+public class DailyWallPaperReceiver extends BroadcastReceiver {
     @Override
-    public boolean onStartJob(JobParameters job) {
-        // Do some work here
+    public void onReceive(final Context context, Intent intent) {
+        Log.i("Reciever", "onReceive: Wall paperchange");
 
-        Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
-        Log.e("Service ", "Started" );
-
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        mBuilder.setContentTitle("Notification Alert, Click Me!");
+        mBuilder.setContentText("Hi, This is Android Notification Detail!");
 
         ImageLoader imageLoader = AppController.getInstance().getImageLoader();
 
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
+        SharedPreferences pref = context.getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
 
         String resolution = pref.getString("resolution", "1080x1920");
 
 // If you are using normal ImageView
-        String url = "https://source.unsplash.com/random/" + resolution;
+        String url = "https://source.unsplash.com/featured/" + resolution;
 
         imageLoader.get(url, new ImageLoader.ImageListener() {
 
@@ -49,7 +51,7 @@ public class WallPaperChangerJob extends JobService {
                 if (response.getBitmap() != null) {
 
                     WallpaperManager myWallpaperManager
-                            = WallpaperManager.getInstance(getApplicationContext());
+                            = WallpaperManager.getInstance(context);
                     try {
                         myWallpaperManager.setBitmap(response.getBitmap());
                     } catch (IOException e) {
@@ -61,12 +63,5 @@ public class WallPaperChangerJob extends JobService {
             }
         });
 
-
-        return false; // Answers the question: "Is there still work going on?"
-    }
-
-    @Override
-    public boolean onStopJob(JobParameters job) {
-        return false; // Answers the question: "Should this job be retried?"
     }
 }

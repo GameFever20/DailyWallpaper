@@ -6,12 +6,41 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="app.studio.crafty.wallpaper.daily.dailywallpaper.SettingActivity"
-    tools:showIn="@layout/activity_setting"
-    android:fitsSystemWindows="false"
-    >
-
+    tools:showIn="@layout/activity_setting">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+
+        android:onClick="onTimeClick"
+        android:layout_height="wrap_content" >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="How often to change walpaper"
+                android:textSize="24sp"
+                android:textColor="@color/colorAccent"
+                android:layout_margin="8dp"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3 Hours"
+                android:textAlignment="center"
+                android:textSize="14sp"
+                android:layout_margin="4dp"
+                />
+
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+
 </LinearLayout>

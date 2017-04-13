@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "964846144996",
+    "firebase_url": "https://daily-wallpaper-a58b2.firebaseio.com",
+    "project_id": "daily-wallpaper-a58b2",
+    "storage_bucket": "daily-wallpaper-a58b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:964846144996:android:c302cdd436cacb40",
+        "android_client_info": {
+          "package_name": "app.studio.crafty.wallpaper.daily.dailywallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "964846144996-ui7ii4e1ekqp4bejaf95ou5bfepne448.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-X0mBkHfrCZFUnHGwweJLf-gCqAXqQB8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

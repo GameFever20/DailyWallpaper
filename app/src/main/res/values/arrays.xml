@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="time_array">
+        <item>1 Day</item>
+        <item>12 hour</item>
+        <item>6 hour</item>
+        <item>3 hour</item>
+
+
+
+
+    </string-array>
+</resources>

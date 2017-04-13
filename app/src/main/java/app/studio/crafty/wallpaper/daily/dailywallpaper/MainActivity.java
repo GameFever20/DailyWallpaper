@@ -4,6 +4,7 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -37,6 +39,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -48,10 +51,16 @@ import com.firebase.jobdispatcher.Job;
 import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.RetryStrategy;
 import com.firebase.jobdispatcher.Trigger;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.NativeExpressAdView;
 import com.luseen.spacenavigation.SpaceItem;
 import com.luseen.spacenavigation.SpaceNavigationView;
 import com.luseen.spacenavigation.SpaceOnClickListener;
 
+import org.honorato.multistatetogglebutton.MultiStateToggleButton;
+import org.honorato.multistatetogglebutton.ToggleButton;
 import org.michaelevans.colorart.library.ColorArt;
 
 import java.io.BufferedOutputStream;
@@ -83,12 +92,15 @@ public class MainActivity extends AppCompatActivity
     String urlString = "https://source.unsplash.com/featured/1080x1920";
     String resolution = "";
 
-    int showAdCount=0;
+    int showAdCount = 0;
 
-    public boolean isSaved =false;
+    public boolean isSaved = false;
 
+    //BottomSheet Variable
+    View bottomSheet;
+    private BottomSheetBehavior mBottomSheetBehavior;
 
-
+    InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,8 +140,6 @@ public class MainActivity extends AppCompatActivity
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeToRefresh);
 
 
-
-
         imageView = (ImageView) findViewById(R.id.imageView2);
         refreshWallPaper();
 
@@ -164,9 +174,12 @@ public class MainActivity extends AppCompatActivity
 
                 } else if (itemIndex == 0) {
                     if (!isAutoSettingCurrentItem) {
-                        Toast.makeText(MainActivity.this, "Image saved in " + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
-                        //spaceNavigationView.setCentreButtonSelected();
-                        scheduleWallChangeJob();
+                        if (!isSaved) {
+                            Toast.makeText(MainActivity.this, "Image saved in " + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
+                            //spaceNavigationView.setCentreButtonSelected();
+                            //scheduleWallChangeJob(3600);
+                            isSaved = true;
+                        }
                     }
                     isAutoSettingCurrentItem = false;
                 }
@@ -178,9 +191,11 @@ public class MainActivity extends AppCompatActivity
                 //Toast.makeText(MainActivity.this, itemIndex + " " + itemName, Toast.LENGTH_SHORT).show();
                 if (itemIndex == 0) {
                     if (!isAutoSettingCurrentItem) {
-                        Toast.makeText(MainActivity.this, "Image saved in reselected" + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
-                        //spaceNavigationView.setCentreButtonSelected();
-                        scheduleWallChangeJob();
+                        if (!isSaved) {
+                            Toast.makeText(MainActivity.this, "Image saved in reselected" + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
+                            //spaceNavigationView.setCentreButtonSelected();
+                            isSaved = true;
+                        }
                     }
                     isAutoSettingCurrentItem = false;
 
@@ -219,6 +234,11 @@ public class MainActivity extends AppCompatActivity
                         || spaceNavigationView.getVisibility() == View.GONE) {
                     spaceNavigationView.setVisibility(View.VISIBLE);
                 }
+
+                if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+                    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                }
             }
         });
 
@@ -232,26 +252,154 @@ public class MainActivity extends AppCompatActivity
 
         fetchDisplayInfo();
 
+        initializeBottomSheet();
+        
+        initializeInterstitialAd();
+        
+
+
+    }
+
+    private void initializeNativeAd() {
+        NativeExpressAdView adView = (NativeExpressAdView)findViewById(R.id.adView);
+
+        AdRequest request = new AdRequest.Builder()
+                .addTestDevice("YOUR_DEVICE_ID")
+                .build();
+        adView.loadAd(request);
+    }
+
+    private void initializeInterstitialAd() {
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                requestNewInterstitial();
+                
+            }
+        });
+
+        requestNewInterstitial();
+
+
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("SEE_YOUR_LOGCAT_TO_GET_YOUR_DEVICE_ID")
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
+    }
+
+    private void initializeBottomSheet() {
+        bottomSheet = findViewById(R.id.bottom_sheet);
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+
+    }
+
+    private void openBottomSheet() {
+
+        ColorArt colorArt = new ColorArt(imageBitmap);
+        bottomSheet.setBackgroundColor(colorArt.getBackgroundColor());
+        bottomSheet.setAlpha(0.90f);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        TextView textview = (TextView) findViewById(R.id.bottom_sheet_textView);
+        textview.setTextColor(colorArt.getDetailColor());
+
+        MultiStateToggleButton multiButton = (MultiStateToggleButton) findViewById(R.id.mstb_multi_id);
+        multiButton.setColors(colorArt.getDetailColor(), colorArt.getPrimaryColor());
+
+
+        multiButton.setValue(getTimePrefrenceValue());
+
+        multiButton.setOnValueChangedListener(new ToggleButton.OnValueChangedListener() {
+            @Override
+            public void onValueChanged(int value) {
+                setTimePrefrenceValue(value);
+                postjob(value);
+            }
+        });
+
+        initializeNativeAd();
+
+
+    }
+
+
+    private void postjob(int value) {
+        switch (value) {
+            case 0:
+                scheduleWallChangeJob(3600 * 24);
+                break;
+            case 1:
+                scheduleWallChangeJob(3600 * 12);
+                break;
+            case 2:
+                scheduleWallChangeJob(3600 * 6);
+                break;
+            case 3:
+                scheduleWallChangeJob(3600 * 3);
+                break;
+            default:
+                scheduleWallChangeJob(3600 * 24);
+                break;
+
+        }
+    }
+
+    private int getTimePrefrenceValue() {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
+        return (pref.getInt("Time", 0)); // getting Integer
+
+
+    }
+
+    private void setTimePrefrenceValue(int timePrefrenceIndex) {
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt("Time", timePrefrenceIndex); // Storing integer
+
+        editor.commit(); // commit changes
+
     }
 
     private void fetchDisplayInfo() {
 
-        if (Build.VERSION.SDK_INT >16) {
+        if (Build.VERSION.SDK_INT > 16) {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getRealMetrics(displayMetrics);
             int width = displayMetrics.widthPixels;
             int height = displayMetrics.heightPixels;
-            resolution = String.valueOf(width)+"x"+String.valueOf(height);
+            resolution = String.valueOf(width) + "x" + String.valueOf(height);
             //Toast.makeText(this, "Resolution is "+resolution, Toast.LENGTH_SHORT).show();
         } else {
             DisplayMetrics displayMetrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
             int width = displayMetrics.widthPixels;
             int height = displayMetrics.heightPixels;
-            resolution = String.valueOf(width)+"x"+String.valueOf(height);
-           // Toast.makeText(this, "Resolution is "+resolution, Toast.LENGTH_SHORT).show();
+            resolution = String.valueOf(width) + "x" + String.valueOf(height);
+            // Toast.makeText(this, "Resolution is "+resolution, Toast.LENGTH_SHORT).show();
 
         }
+
+        try{
+            SharedPreferences pref = getApplicationContext().getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putString("resolution", resolution); // Storing integer
+
+            editor.apply(); // commit changes
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+
     }
 
     private void setSpaceViewColor() {
@@ -314,7 +462,7 @@ public class MainActivity extends AppCompatActivity
 
     private void refreshWallPaper() {
         loadImage();
-         swipeRefreshLayout.setRefreshing(true);
+        swipeRefreshLayout.setRefreshing(true);
     }
 
     @Override
@@ -322,6 +470,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             super.onBackPressed();
         }
@@ -356,29 +506,29 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
 
-        switch (id){
-            case R.id.nav_featured :
+        switch (id) {
+            case R.id.nav_featured:
                 onFeaturedClick();
                 break;
-            case R.id.nav_random :
+            case R.id.nav_random:
                 onRandomClick();
                 break;
-            case R.id.nav_nature :
+            case R.id.nav_nature:
                 onCategoryClick("nature");
                 break;
-            case R.id.nav_food :
+            case R.id.nav_food:
                 onCategoryClick("food");
                 break;
-            case R.id.nav_people :
+            case R.id.nav_people:
                 onCategoryClick("people");
                 break;
-            case R.id.nav_buildings :
+            case R.id.nav_buildings:
                 onCategoryClick("buildings");
                 break;
-            case R.id.nav_objects :
+            case R.id.nav_objects:
                 onCategoryClick("objects");
                 break;
-            case R.id.nav_technology :
+            case R.id.nav_technology:
                 onCategoryClick("technology");
                 break;
             case R.id.nav_wall_setting:
@@ -422,7 +572,7 @@ public class MainActivity extends AppCompatActivity
         sharingIntent.setType("text/plain");
 
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Get Awsome Wallpaper and automaticall change wallpaper daily");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,"https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper" );
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
 
     }
@@ -432,9 +582,9 @@ public class MainActivity extends AppCompatActivity
         share.setType("image/jpeg");
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        File f = new File(Environment.getExternalStorageDirectory() +"/"+getString(R.string.app_name) );
+        File f = new File(Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name));
         f.mkdirs();
-        f = new File(Environment.getExternalStorageDirectory() +"/"+getString(R.string.app_name) + File.separator + "Shared.jpg");
+        f = new File(Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name) + File.separator + "Shared.jpg");
 
         try {
             f.createNewFile();
@@ -444,7 +594,7 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
         share.putExtra(Intent.EXTRA_STREAM, Uri.parse(f.getPath()));
-        share.putExtra(Intent.EXTRA_TEXT , "Get Full HD WallPaper and auto - change wallpaper daily  \n https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
+        share.putExtra(Intent.EXTRA_TEXT, "Get Full HD WallPaper and auto - change wallpaper daily  \n https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
         startActivity(Intent.createChooser(share, "Share Image"));
     }
 
@@ -458,20 +608,21 @@ public class MainActivity extends AppCompatActivity
 
     private void onWallSetting() {
 
+        openBottomSheet();
     }
 
     private void onCategoryClick(String category) {
-        urlString= "https://source.unsplash.com/category/"+category+"/"+resolution;
+        urlString = "https://source.unsplash.com/category/" + category + "/" + resolution;
         refreshWallPaper();
     }
 
     private void onRandomClick() {
-        urlString = "https://source.unsplash.com/random/"+resolution;
+        urlString = "https://source.unsplash.com/random/" + resolution;
         refreshWallPaper();
     }
 
     private void onFeaturedClick() {
-        urlString = "https://source.unsplash.com/featured/"+resolution;
+        urlString = "https://source.unsplash.com/featured/" + resolution;
         refreshWallPaper();
     }
 
@@ -507,8 +658,8 @@ public class MainActivity extends AppCompatActivity
                     setSpaceViewColor();
                     Toast.makeText(MainActivity.this, "Image loaded", Toast.LENGTH_SHORT).show();
                     swipeRefreshLayout.setRefreshing(false);
-                    isSaved=false;
-                    showAdCount++;
+                    isSaved = false;
+
                     checkAdShown();
                 }
             }
@@ -516,9 +667,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void checkAdShown() {
-        if(showAdCount > 4){
+        if (showAdCount > 4) {
+
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+                showAdCount = 0;
+            } else {
+
+            }
             //Ads showing code here
-            showAdCount=0;
+
+        }else {
+            showAdCount++;
         }
     }
 
@@ -539,7 +699,7 @@ public class MainActivity extends AppCompatActivity
 
     private String saveToInternalStorage(Bitmap bitmapImage, String filename) {
         //get path to external storage (SD card)
-        String iconsStoragePath = Environment.getExternalStorageDirectory() + "/"+getString(R.string.app_name)+"/MyWallPaper/";
+        String iconsStoragePath = Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name) + "/MyWallPaper/";
         File sdIconStorageDir = new File(iconsStoragePath);
 
         //create storage directories, if they don't exist
@@ -564,7 +724,7 @@ public class MainActivity extends AppCompatActivity
             Log.w("TAG", "Error saving image file: " + e.getMessage());
             return sdIconStorageDir.getPath();
         }
-        isSaved=true;
+        isSaved = true;
 
         return sdIconStorageDir.getAbsolutePath();
 
@@ -600,14 +760,14 @@ public class MainActivity extends AppCompatActivity
                 >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 
-    public void scheduleWallChangeJob() {
+    public void scheduleWallChangeJob(int time) {
 
         // Create a new dispatcher using the Google Play driver.
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
 
 
         Bundle myExtrasBundle = new Bundle();
-        myExtrasBundle.putString("some_key", "some_value");
+        myExtrasBundle.putString("Category", "some_value");
 
         Job myJob = dispatcher.newJobBuilder()
                 // the JobService that will be called
@@ -619,9 +779,9 @@ public class MainActivity extends AppCompatActivity
                 // don't persist past a device reboot
                 .setLifetime(Lifetime.FOREVER)
                 // start between 0 and 60 seconds from now
-                .setTrigger(Trigger.executionWindow(3600, 7200))
+                .setTrigger(Trigger.executionWindow(time, time + 3600))
                 // don't overwrite an existing job with the same tag
-                .setReplaceCurrent(true)
+                .setReplaceCurrent(false)
                 // retry with exponential backoff
                 .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                 // constraints that need to be satisfied for the job to run
@@ -630,6 +790,7 @@ public class MainActivity extends AppCompatActivity
                         //Constraint.ON_UNMETERED_NETWORK,
                         // only run when the device is charging
                         //Constraint.DEVICE_CHARGING
+
                 )
                 .setExtras(myExtrasBundle)
                 .build();
@@ -637,6 +798,8 @@ public class MainActivity extends AppCompatActivity
         dispatcher.mustSchedule(myJob);
 
     }
+    
+    
 
 
 }
