@@ -1,8 +1,12 @@
 package app.studio.crafty.wallpaper.daily.dailywallpaper;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.WallpaperManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -33,7 +37,7 @@ public class WallPaperChangerJob extends JobService {
         // Do some work here
 
         Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
-        Log.e("Service ", "Started" );
+        Log.e("Service ", "Started");
 
 
         ImageLoader imageLoader = AppController.getInstance().getImageLoader();
@@ -66,10 +70,21 @@ public class WallPaperChangerJob extends JobService {
                         e.printStackTrace();
                     }
 
+                    Intent intent = new Intent(getApplicationContext() , MainActivity.class);
+
+                    PendingIntent resultPendingIntent =
+                            PendingIntent.getActivity(
+                                    getApplication(),
+                                    2,
+                                    intent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT
+                            );
+
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext());
                     mBuilder.setSmallIcon(R.mipmap.ic_launcher);
                     mBuilder.setContentTitle(getString(R.string.app_name));
                     mBuilder.setContentText("Your wallpaper Changed via job");
+                    mBuilder.setContentIntent(resultPendingIntent);
 
                     int mNotificationId = 123;
 // Gets an instance of the NotificationManager service
@@ -91,24 +106,24 @@ public class WallPaperChangerJob extends JobService {
         switch (timePref) {
             case 0:
 
-                time= 3600 * 24;
+                time = 3600 * 24;
 
                 break;
             case 1:
-                time= 3600 * 12;
+                time = 3600 * 12;
                 break;
             case 2:
-                time= 3600 * 6;
+                time = 3600 * 6;
                 break;
             case 3:
-                time= 1800;
+                time = 1800;
                 break;
             default:
-                time= 3600 * 24;
+                time = 3600 * 24;
                 break;
 
         }
-        Toast.makeText(this, "Time for job"+time, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Time for job" + time, Toast.LENGTH_SHORT).show();
 
         // Create a new dispatcher using the Google Play driver.
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
@@ -145,7 +160,7 @@ public class WallPaperChangerJob extends JobService {
 
         dispatcher.mustSchedule(myJob);
 
-
+        checkRateUs(getApplication());
 
         return false; // Answers the question: "Is there still work going on?"
     }
@@ -217,4 +232,86 @@ int time = 3600;
 */
         return false; // Answers the question: "Should this job be retried?"
     }
+
+
+    public void checkRateUs(Context context) {
+        SharedPreferences pref = context.getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
+        int checkNum = pref.getInt("RateUs", 0); // getting Integer
+
+        if (checkNum == 0) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper"));
+
+            PendingIntent resultPendingIntent =
+                    PendingIntent.getActivity(
+                            context,
+                            2,
+                            intent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                    );
+
+
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+            mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+            mBuilder.setContentTitle("Rate us");
+            mBuilder.setContentText("We appreciate your feedback");
+            mBuilder.setContentIntent(resultPendingIntent);
+
+
+            int mNotificationId = 123;
+// Gets an instance of the NotificationManager service
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+            mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
+
+        } else if (checkNum == 15) {
+
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+
+            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Get Awsome Wallpaper and automaticall change wallpaper daily");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
+
+
+            PendingIntent resultPendingIntent =
+                    PendingIntent.getActivity(
+                            context,
+                            2,
+                            sharingIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                    );
+
+
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+            mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+            mBuilder.setContentTitle("Share the love");
+            mBuilder.setContentText("Share app with your friend and family");
+            mBuilder.setContentIntent(resultPendingIntent);
+
+
+            int mNotificationId = 123;
+// Gets an instance of the NotificationManager service
+            NotificationManager mNotifyMgr =
+                    (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+            mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
+
+        } else if (checkNum > 15) {
+
+
+        } else {
+            checkNum++;
+            SharedPreferences.Editor editor = pref.edit();
+            editor.putInt("RateUs", checkNum); // Storing integer
+
+            editor.apply(); // commit changes
+
+
+        }
+
+
+    }
+
 }
