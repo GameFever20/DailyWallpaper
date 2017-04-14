@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = pref.edit();
         editor.putInt("Time", timePrefrenceIndex); // Storing integer
 
-        editor.commit(); // commit changes
+        editor.apply(); // commit changes
 
     }
 
