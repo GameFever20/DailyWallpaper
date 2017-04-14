@@ -84,13 +84,76 @@ public class WallPaperChangerJob extends JobService {
         });
 
 
+        int timePref = pref.getInt("Time", 0); // getting Integer
+
+        int time = 3600;
+
+        switch (timePref) {
+            case 0:
+
+                time= 3600 * 24;
+
+                break;
+            case 1:
+                time= 3600 * 12;
+                break;
+            case 2:
+                time= 3600 * 6;
+                break;
+            case 3:
+                time= 1800;
+                break;
+            default:
+                time= 3600 * 24;
+                break;
+
+        }
+        Toast.makeText(this, "Time for job"+time, Toast.LENGTH_SHORT).show();
+
+        // Create a new dispatcher using the Google Play driver.
+        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+
+
+        Bundle myExtrasBundle = new Bundle();
+        myExtrasBundle.putString("Category", "some_value");
+
+        Job myJob = dispatcher.newJobBuilder()
+                // the JobService that will be called
+                .setService(WallPaperChangerJob.class)
+                // uniquely identifies the job
+                .setTag("my-wallchanger_job")
+                // one-off job
+                .setRecurring(false)
+                // don't persist past a device reboot
+                .setLifetime(Lifetime.FOREVER)
+                // start between 0 and 60 seconds from now
+                .setTrigger(Trigger.executionWindow(time, time + 3600))
+                // don't overwrite an existing job with the same tag
+                .setReplaceCurrent(false)
+                // retry with exponential backoff
+                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                // constraints that need to be satisfied for the job to run
+                .setConstraints(
+                        // only run on an unmetered network
+                        //Constraint.ON_UNMETERED_NETWORK,
+                        // only run when the device is charging
+                        //Constraint.DEVICE_CHARGING
+
+                )
+                .setExtras(myExtrasBundle)
+                .build();
+
+        dispatcher.mustSchedule(myJob);
+
+
+
         return false; // Answers the question: "Is there still work going on?"
     }
 
     @Override
     public boolean onStopJob(JobParameters job) {
 
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
+       /* SharedPreferences pref = getApplicationContext().getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
         int timePref = pref.getInt("Time", 0); // getting Integer
 
 int time = 3600;
@@ -151,7 +214,7 @@ int time = 3600;
 
         dispatcher.mustSchedule(myJob);
 
-
+*/
         return false; // Answers the question: "Should this job be retried?"
     }
 }

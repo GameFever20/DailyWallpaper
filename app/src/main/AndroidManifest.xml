@@ -45,7 +45,7 @@
 
         <activity android:name=".Random"
             android:label="Random Wall"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

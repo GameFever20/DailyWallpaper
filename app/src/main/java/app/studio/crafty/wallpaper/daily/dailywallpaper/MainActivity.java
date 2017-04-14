@@ -352,6 +352,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 3:
                 scheduleWallChangeJob(1800 );
+                Toast.makeText(this, "Job time 1800", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 scheduleWallChangeJob(3600 * 24);

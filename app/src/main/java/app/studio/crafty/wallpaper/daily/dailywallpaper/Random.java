@@ -26,10 +26,12 @@ public class Random extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.random_layout);
 
 
 
         Toast.makeText(this, "Loading Wallpaper", Toast.LENGTH_SHORT).show();
+
         fetchDisplayInfo();
 
         ImageLoader imageLoader = AppController.getInstance().getImageLoader();
@@ -43,6 +45,7 @@ public class Random extends Activity {
             public void onErrorResponse(VolleyError error) {
                 Log.e("Random", "Image Load Error: " + error.getMessage());
                 Toast.makeText(Random.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                finish();
             }
 
             @Override
@@ -59,6 +62,7 @@ public class Random extends Activity {
                         e.printStackTrace();
                     }
                     Toast.makeText(Random.this, "WallPaper Changed", Toast.LENGTH_SHORT).show();
+                    finish();
 
                 }
             }
