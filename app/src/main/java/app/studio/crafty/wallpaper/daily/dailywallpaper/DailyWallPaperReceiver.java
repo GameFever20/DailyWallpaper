@@ -76,6 +76,8 @@ public class DailyWallPaperReceiver extends BroadcastReceiver {
             }
         });
 
+        checkRateUs(context);
+
     }
 
 
@@ -183,6 +185,5 @@ public class DailyWallPaperReceiver extends BroadcastReceiver {
 
 
     }
-
 
 }
