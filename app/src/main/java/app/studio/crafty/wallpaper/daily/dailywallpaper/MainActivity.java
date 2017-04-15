@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -148,6 +149,7 @@ public class MainActivity extends AppCompatActivity
         refreshWallPaper();
 
 
+
         spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
         try {
             spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
@@ -157,7 +159,6 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
             @Override
@@ -225,7 +226,6 @@ public class MainActivity extends AppCompatActivity
 
         spaceNavigationView.setCentreButtonSelectable(true);
         setSpaceNavHeight();
-        spaceNavigationView.setSpaceBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
 
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -261,6 +261,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+
+        showSplashScreen();
 
 
         initializeBottomSheet();
@@ -572,6 +574,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_feedback:
                 onFeedbackClick();
                 break;
+            case R.id.nav_about_us:
+                onAboutUsClick();
+                break;
 
 
         }
@@ -579,6 +584,15 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void onAboutUsClick() {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://appforyou.wixsite.com/android")));
+
+        } catch (Exception exception) {
+
+        }
     }
 
     private void onFeedbackClick() {
@@ -839,7 +853,7 @@ public class MainActivity extends AppCompatActivity
                     // start between 0 and 60 seconds from now
                     .setTrigger(Trigger.executionWindow(time, time + 3600))
                     // don't overwrite an existing job with the same tag
-                    .setReplaceCurrent(false)
+                    .setReplaceCurrent(true)
                     // retry with exponential backoff
                     .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                     // constraints that need to be satisfied for the job to run
@@ -856,6 +870,22 @@ public class MainActivity extends AppCompatActivity
             dispatcher.mustSchedule(myJob);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+    }
+
+    public void showSplashScreen(){
+
+        try {
+            WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+            Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+            imageView.setImageDrawable(wallpaperDrawable);
+
+            imageBitmap = ((BitmapDrawable)wallpaperDrawable).getBitmap();
+            setSpaceViewColor();
+        } catch (Exception e) {
+            e.printStackTrace();
+
         }
 
     }

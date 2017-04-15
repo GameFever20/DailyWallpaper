@@ -10,8 +10,8 @@
     tools:showIn="@layout/app_bar_main">
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:layout_width="match_parent"
         android:id="@+id/swipeToRefresh"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ImageView
@@ -23,40 +23,45 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="0dp"
             android:layout_marginStart="0dp"
-            app:srcCompat="@drawable/ic_menu_send" />
+            app:srcCompat="@drawable/side_nav_bar" />
 
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-
+    <!--<ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:paddingTop="40dp"
+        android:src="@mipmap/ic_open_nav" />
+-->
 
     <LinearLayout
-            android:id="@+id/space_viewGroup_layout"
+        android:id="@+id/space_viewGroup_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+
+        <com.luseen.spacenavigation.SpaceNavigationView
+            android:id="@+id/space"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
-            android:orientation="vertical">
+            app:centre_button_icon="@mipmap/ic_refresh" />
 
 
-            <com.luseen.spacenavigation.SpaceNavigationView
-                android:id="@+id/space"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
-                android:layout_gravity="bottom" />
+        <View
+            android:id="@+id/space_bottomView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp">
 
+        </View>
 
-            <View
-                android:id="@+id/space_bottomView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp">
-
-            </View>
-
-        </LinearLayout>
-
-
+    </LinearLayout>
 
 
 </FrameLayout>
