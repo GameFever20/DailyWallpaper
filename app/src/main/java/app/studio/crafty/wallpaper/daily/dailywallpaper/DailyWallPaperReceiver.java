@@ -32,7 +32,7 @@ public class DailyWallPaperReceiver extends BroadcastReceiver {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setContentTitle(context.getString(R.string.app_name));
-        mBuilder.setContentText("Your Daily wallpaper Changed via reciever");
+        mBuilder.setContentText("Your Daily wallpaper is changed");
 
         int mNotificationId = 123;
 // Gets an instance of the NotificationManager service
@@ -76,7 +76,7 @@ public class DailyWallPaperReceiver extends BroadcastReceiver {
             }
         });
 
-        checkRateUs(context);
+        //checkRateUs(context);
 
     }
 

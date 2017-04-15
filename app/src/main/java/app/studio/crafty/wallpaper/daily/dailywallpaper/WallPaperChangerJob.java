@@ -83,7 +83,7 @@ public class WallPaperChangerJob extends JobService {
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext());
                     mBuilder.setSmallIcon(R.mipmap.ic_launcher);
                     mBuilder.setContentTitle(getString(R.string.app_name));
-                    mBuilder.setContentText("Your wallpaper Changed via job");
+                    mBuilder.setContentText("Your wallpaper Changed");
                     mBuilder.setContentIntent(resultPendingIntent);
 
                     int mNotificationId = 123;
@@ -116,14 +116,14 @@ public class WallPaperChangerJob extends JobService {
                 time = 3600 * 6;
                 break;
             case 3:
-                time = 1800;
+                time = 3600*3;
                 break;
             default:
                 time = 3600 * 24;
                 break;
 
         }
-        Toast.makeText(this, "Time for job" + time, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Time for job" + time, Toast.LENGTH_SHORT).show();
 
         // Create a new dispatcher using the Google Play driver.
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
@@ -144,7 +144,7 @@ public class WallPaperChangerJob extends JobService {
                 // start between 0 and 60 seconds from now
                 .setTrigger(Trigger.executionWindow(time, time + 3600))
                 // don't overwrite an existing job with the same tag
-                .setReplaceCurrent(false)
+                .setReplaceCurrent(true)
                 // retry with exponential backoff
                 .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
                 // constraints that need to be satisfied for the job to run
@@ -238,7 +238,7 @@ int time = 3600;
         SharedPreferences pref = context.getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
         int checkNum = pref.getInt("RateUs", 0); // getting Integer
 
-        if (checkNum == 0) {
+        if (checkNum == 5) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper"));
 
             PendingIntent resultPendingIntent =

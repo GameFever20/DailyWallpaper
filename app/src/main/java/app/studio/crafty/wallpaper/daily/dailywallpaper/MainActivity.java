@@ -149,10 +149,14 @@ public class MainActivity extends AppCompatActivity
 
 
         spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
-        spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
+        try {
+            spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
 
-        spaceNavigationView.addSpaceItem(new SpaceItem("Save", R.drawable.ic_menu_gallery));
-        spaceNavigationView.addSpaceItem(new SpaceItem("Set", R.drawable.ic_menu_camera));
+            spaceNavigationView.addSpaceItem(new SpaceItem("Save", R.drawable.ic_menu_gallery));
+            spaceNavigationView.addSpaceItem(new SpaceItem("Set", R.drawable.ic_menu_camera));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         spaceNavigationView.setSpaceOnClickListener(new SpaceOnClickListener() {
@@ -303,37 +307,45 @@ public class MainActivity extends AppCompatActivity
 
     private void initializeBottomSheet() {
         bottomSheet = findViewById(R.id.bottom_sheet);
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        try {
+            mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
 
     private void openBottomSheet() {
 
-        ColorArt colorArt = new ColorArt(imageBitmap);
-        bottomSheet.setBackgroundColor(colorArt.getBackgroundColor());
-        bottomSheet.setAlpha(0.90f);
-        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        try {
+            ColorArt colorArt = new ColorArt(imageBitmap);
+            bottomSheet.setBackgroundColor(colorArt.getBackgroundColor());
+            bottomSheet.setAlpha(0.90f);
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        TextView textview = (TextView) findViewById(R.id.bottom_sheet_textView);
-        textview.setTextColor(colorArt.getDetailColor());
+            TextView textview = (TextView) findViewById(R.id.bottom_sheet_textView);
+            textview.setTextColor(colorArt.getDetailColor());
 
-        MultiStateToggleButton multiButton = (MultiStateToggleButton) findViewById(R.id.mstb_multi_id);
-        multiButton.setColors(colorArt.getDetailColor(), colorArt.getPrimaryColor());
+            MultiStateToggleButton multiButton = (MultiStateToggleButton) findViewById(R.id.mstb_multi_id);
+            multiButton.setColors(colorArt.getDetailColor(), colorArt.getPrimaryColor());
 
 
-        multiButton.setValue(getTimePrefrenceValue());
+            multiButton.setValue(getTimePrefrenceValue());
 
-        multiButton.setOnValueChangedListener(new ToggleButton.OnValueChangedListener() {
-            @Override
-            public void onValueChanged(int value) {
-                setTimePrefrenceValue(value);
-                postjob(value);
-            }
-        });
+            multiButton.setOnValueChangedListener(new ToggleButton.OnValueChangedListener() {
+                @Override
+                public void onValueChanged(int value) {
+                    setTimePrefrenceValue(value);
+                    postjob(value);
+                }
+            });
 
-        initializeNativeAd();
+            initializeNativeAd();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -414,28 +426,32 @@ public class MainActivity extends AppCompatActivity
 
     private void setSpaceViewColor() {
 
-        if (imageBitmap != null) {
-            ColorArt colorArt = new ColorArt(imageBitmap);
-            spaceNavigationView.invalidate();
+        try {
+            if (imageBitmap != null) {
+                ColorArt colorArt = new ColorArt(imageBitmap);
+                spaceNavigationView.invalidate();
 
-            //spaceNavigationView.changeSpaceBackgroundColor(ContextCompat.getColor(this, colorArt.getBackgroundColor()));
-            spaceNavigationView.changeSpaceBackgroundColor(colorArt.getBackgroundColor());
-            spaceNavigationView.setInActiveSpaceItemColor(colorArt.getPrimaryColor());
-            spaceNavigationView.setActiveSpaceItemColor(colorArt.getDetailColor());
-            spaceNavigationView.setCentreButtonColor(colorArt.getSecondaryColor());
-            spaceNavigationView.setActiveCentreButtonBackgroundColor(colorArt.getSecondaryColor());
+                //spaceNavigationView.changeSpaceBackgroundColor(ContextCompat.getColor(this, colorArt.getBackgroundColor()));
+                spaceNavigationView.changeSpaceBackgroundColor(colorArt.getBackgroundColor());
+                spaceNavigationView.setInActiveSpaceItemColor(colorArt.getPrimaryColor());
+                spaceNavigationView.setActiveSpaceItemColor(colorArt.getDetailColor());
+                spaceNavigationView.setCentreButtonColor(colorArt.getSecondaryColor());
+                spaceNavigationView.setActiveCentreButtonBackgroundColor(colorArt.getSecondaryColor());
 
-            isAutoSettingCurrentItem = true;
-            spaceNavigationView.changeCurrentItem(0);
-            isAutoSettingCurrentItem1 = true;
-            spaceNavigationView.changeCurrentItem(1);
-
-
-            spaceNavigationView.setCentreButtonSelected();
+                isAutoSettingCurrentItem = true;
+                spaceNavigationView.changeCurrentItem(0);
+                isAutoSettingCurrentItem1 = true;
+                spaceNavigationView.changeCurrentItem(1);
 
 
-            //Toast.makeText(this, "Color changed to "+colorArt.getBackgroundColor(), Toast.LENGTH_SHORT).show();
+                spaceNavigationView.setCentreButtonSelected();
 
+
+                //Toast.makeText(this, "Color changed to "+colorArt.getBackgroundColor(), Toast.LENGTH_SHORT).show();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -696,18 +712,23 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void checkAdShown() {
-        if (showAdCount > 4) {
 
-            if (mInterstitialAd.isLoaded()) {
-                mInterstitialAd.show();
-                showAdCount = 0;
-            } else {
+        try {
+            if (showAdCount > 4) {
 
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                    showAdCount = 0;
+                } else {
+
+                }
+                //Ads showing code here
+
+            }else {
+                showAdCount++;
             }
-            //Ads showing code here
-
-        }else {
-            showAdCount++;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -722,18 +743,7 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this);
-        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
-        mBuilder.setContentTitle(getString(R.string.app_name));
-        mBuilder.setContentText("Your Daily wallpaper Changed");
-
-        int mNotificationId = 123;
-// Gets an instance of the NotificationManager service
-        NotificationManager mNotifyMgr =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-// Builds the notification and issues it.
-        mNotifyMgr.notify(mNotificationId, mBuilder.build());
-
+       // Toast.makeText(this, "WallPaper set", Toast.LENGTH_SHORT).show();
 
 
     }
@@ -775,24 +785,28 @@ public class MainActivity extends AppCompatActivity
 
     public int getNavBarHeight(Context c) {
         int result = 0;
-        boolean hasMenuKey = ViewConfiguration.get(c).hasPermanentMenuKey();
-        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+        try {
+            boolean hasMenuKey = ViewConfiguration.get(c).hasPermanentMenuKey();
+            boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
 
-        if (!hasMenuKey && !hasBackKey) {
-            //The device has a navigation bar
-            Resources resources = getResources();
+            if (!hasMenuKey && !hasBackKey) {
+                //The device has a navigation bar
+                Resources resources = getResources();
 
-            int orientation = getResources().getConfiguration().orientation;
-            int resourceId;
-            if (isTablet(c)) {
-                resourceId = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape", "dimen", "android");
-            } else {
-                resourceId = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_width", "dimen", "android");
+                int orientation = getResources().getConfiguration().orientation;
+                int resourceId;
+                if (isTablet(c)) {
+                    resourceId = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape", "dimen", "android");
+                } else {
+                    resourceId = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_width", "dimen", "android");
+                }
+
+                if (resourceId > 0) {
+                    return getResources().getDimensionPixelSize(resourceId);
+                }
             }
-
-            if (resourceId > 0) {
-                return getResources().getDimensionPixelSize(resourceId);
-            }
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -805,40 +819,44 @@ public class MainActivity extends AppCompatActivity
 
     public void scheduleWallChangeJob(int time) {
 
-        // Create a new dispatcher using the Google Play driver.
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        try {
+            // Create a new dispatcher using the Google Play driver.
+            FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
 
 
-        Bundle myExtrasBundle = new Bundle();
-        myExtrasBundle.putString("Category", "some_value");
+            Bundle myExtrasBundle = new Bundle();
+            myExtrasBundle.putString("Category", "some_value");
 
-        Job myJob = dispatcher.newJobBuilder()
-                // the JobService that will be called
-                .setService(WallPaperChangerJob.class)
-                // uniquely identifies the job
-                .setTag("my-wallchanger_job")
-                // one-off job
-                .setRecurring(false)
-                // don't persist past a device reboot
-                .setLifetime(Lifetime.FOREVER)
-                // start between 0 and 60 seconds from now
-                .setTrigger(Trigger.executionWindow(time, time + 3600))
-                // don't overwrite an existing job with the same tag
-                .setReplaceCurrent(false)
-                // retry with exponential backoff
-                .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
-                // constraints that need to be satisfied for the job to run
-                .setConstraints(
-                        // only run on an unmetered network
-                        //Constraint.ON_UNMETERED_NETWORK,
-                        // only run when the device is charging
-                        //Constraint.DEVICE_CHARGING
+            Job myJob = dispatcher.newJobBuilder()
+                    // the JobService that will be called
+                    .setService(WallPaperChangerJob.class)
+                    // uniquely identifies the job
+                    .setTag("my-wallchanger_job")
+                    // one-off job
+                    .setRecurring(false)
+                    // don't persist past a device reboot
+                    .setLifetime(Lifetime.FOREVER)
+                    // start between 0 and 60 seconds from now
+                    .setTrigger(Trigger.executionWindow(time, time + 3600))
+                    // don't overwrite an existing job with the same tag
+                    .setReplaceCurrent(false)
+                    // retry with exponential backoff
+                    .setRetryStrategy(RetryStrategy.DEFAULT_EXPONENTIAL)
+                    // constraints that need to be satisfied for the job to run
+                    .setConstraints(
+                            // only run on an unmetered network
+                            //Constraint.ON_UNMETERED_NETWORK,
+                            // only run when the device is charging
+                            //Constraint.DEVICE_CHARGING
 
-                )
-                .setExtras(myExtrasBundle)
-                .build();
+                    )
+                    .setExtras(myExtrasBundle)
+                    .build();
 
-        dispatcher.mustSchedule(myJob);
+            dispatcher.mustSchedule(myJob);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
