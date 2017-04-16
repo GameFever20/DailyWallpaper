@@ -68,6 +68,9 @@ public class Random extends Activity {
             }
         });
 
+        //test it
+        finish();
+
 
     }
 

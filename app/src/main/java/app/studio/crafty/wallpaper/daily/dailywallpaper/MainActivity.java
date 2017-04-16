@@ -149,7 +149,6 @@ public class MainActivity extends AppCompatActivity
         refreshWallPaper();
 
 
-
         spaceNavigationView = (SpaceNavigationView) findViewById(R.id.space);
         try {
             spaceNavigationView.initWithSaveInstanceState(savedInstanceState);
@@ -176,7 +175,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (itemIndex == 1) {
                     if (!isAutoSettingCurrentItem1) {
-                        showAlert("WallPaper Set ","");
+                        showAlert("WallPaper Set ", "");
                         setAsWallPaper();
                     }
                     isAutoSettingCurrentItem1 = false;
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity
                     if (!isAutoSettingCurrentItem) {
                         if (!isSaved) {
                             //Toast.makeText(MainActivity.this, "Image saved in " + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
-                            showAlert("WallPaper Saved ",saveToInternalStorage(imageBitmap, "Wall_"));
+                            showAlert("WallPaper Saved ", saveToInternalStorage(imageBitmap, "Wall_"));
                             //spaceNavigationView.setCentreButtonSelected();
                             //scheduleWallChangeJob(3600);
                             isSaved = true;
@@ -205,7 +204,7 @@ public class MainActivity extends AppCompatActivity
                         if (!isSaved) {
                             //Toast.makeText(MainActivity.this, "Image saved in reselected" + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
                             //spaceNavigationView.setCentreButtonSelected();
-                            showAlert("WallPaper Saved ",saveToInternalStorage(imageBitmap, "Wall_"));
+                            showAlert("WallPaper Saved ", saveToInternalStorage(imageBitmap, "Wall_"));
                             isSaved = true;
                         }
                     }
@@ -266,15 +265,14 @@ public class MainActivity extends AppCompatActivity
 
 
         initializeBottomSheet();
-        
+
         initializeInterstitialAd();
-        
 
 
     }
 
     private void initializeNativeAd() {
-        NativeExpressAdView adView = (NativeExpressAdView)findViewById(R.id.adView);
+        NativeExpressAdView adView = (NativeExpressAdView) findViewById(R.id.adView);
 
         AdRequest request = new AdRequest.Builder()
                 .addTestDevice("YOUR_DEVICE_ID")
@@ -290,7 +288,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onAdClosed() {
                 requestNewInterstitial();
-                
+
             }
         });
 
@@ -365,7 +363,7 @@ public class MainActivity extends AppCompatActivity
                 scheduleWallChangeJob(3600 * 6);
                 break;
             case 3:
-                scheduleWallChangeJob(1800 );
+                scheduleWallChangeJob(3600 * 3);
                 Toast.makeText(this, "Job time 1800", Toast.LENGTH_SHORT).show();
                 break;
             default:
@@ -410,18 +408,17 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        try{
+        try {
             SharedPreferences pref = getApplicationContext().getSharedPreferences("DailyWallPaperPref", 0); // 0 - for private mode
             SharedPreferences.Editor editor = pref.edit();
             editor.putString("resolution", resolution); // Storing integer
 
             editor.apply(); // commit changes
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         urlString = "https://source.unsplash.com/featured/" + resolution;
-
 
 
     }
@@ -738,7 +735,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 //Ads showing code here
 
-            }else {
+            } else {
                 showAdCount++;
             }
         } catch (Exception e) {
@@ -757,8 +754,8 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-       // Toast.makeText(this, "WallPaper set", Toast.LENGTH_SHORT).show();
-
+        // Toast.makeText(this, "WallPaper set", Toast.LENGTH_SHORT).show();
+        postjob(getTimePrefrenceValue());
 
     }
 
@@ -874,14 +871,14 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    public void showSplashScreen(){
+    public void showSplashScreen() {
 
         try {
             WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
             Drawable wallpaperDrawable = wallpaperManager.getDrawable();
             imageView.setImageDrawable(wallpaperDrawable);
 
-            imageBitmap = ((BitmapDrawable)wallpaperDrawable).getBitmap();
+            imageBitmap = ((BitmapDrawable) wallpaperDrawable).getBitmap();
             setSpaceViewColor();
         } catch (Exception e) {
             e.printStackTrace();
