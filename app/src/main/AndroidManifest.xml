@@ -45,6 +45,7 @@
 
         <activity android:name=".Random"
             android:label="Random Wall"
+            android:icon="@mipmap/ic_refresh_logo"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             >
             <intent-filter>

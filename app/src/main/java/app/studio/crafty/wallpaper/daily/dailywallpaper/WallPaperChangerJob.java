@@ -36,7 +36,7 @@ public class WallPaperChangerJob extends JobService {
     public boolean onStartJob(JobParameters job) {
         // Do some work here
 
-        Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Changing Wallpaper", Toast.LENGTH_SHORT).show();
         Log.e("Service ", "Started");
 
 

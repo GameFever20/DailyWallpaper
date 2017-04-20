@@ -350,7 +350,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
     private void postjob(int value) {
         switch (value) {
             case 0:
@@ -364,7 +363,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 3:
                 scheduleWallChangeJob(3600 * 3);
-                Toast.makeText(this, "Job time 1800", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Job time 1800", Toast.LENGTH_SHORT).show();
                 break;
             default:
                 scheduleWallChangeJob(3600 * 24);
@@ -585,7 +584,7 @@ public class MainActivity extends AppCompatActivity
 
     private void onAboutUsClick() {
         try {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://appforyou.wixsite.com/android")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://acraftystudio.wixsite.com/android")));
 
         } catch (Exception exception) {
 
