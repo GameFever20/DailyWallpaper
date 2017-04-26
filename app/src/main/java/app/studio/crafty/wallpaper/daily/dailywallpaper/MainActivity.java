@@ -757,7 +757,7 @@ public class MainActivity extends AppCompatActivity
 
 
             //get path to external storage (SD card)
-            String iconsStoragePath = Environment.getExternalStorageDirectory() + "/Daily_Wallpaper" + "/MyWallPaper/";
+            String iconsStoragePath = Environment.getExternalStorageDirectory() + "/"+getString(R.string.app_name) + "/MyWallPaper/";
             File sdIconStorageDir = new File(iconsStoragePath);
 
             //create storage directories, if they don't exist
