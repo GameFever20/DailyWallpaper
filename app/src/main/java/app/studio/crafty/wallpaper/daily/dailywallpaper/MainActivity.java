@@ -1,16 +1,13 @@
 package app.studio.crafty.wallpaper.daily.dailywallpaper;
 
-import android.app.NotificationManager;
 import android.app.WallpaperManager;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -19,13 +16,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.NotificationCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.View;
@@ -38,8 +32,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,7 +39,6 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
@@ -76,9 +67,6 @@ import java.io.IOException;
 
 
 import utils.AppController;
-
-import static app.studio.crafty.wallpaper.daily.dailywallpaper.R.id.toolbar;
-import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -185,7 +173,8 @@ public class MainActivity extends AppCompatActivity
                     if (!isAutoSettingCurrentItem) {
                         if (!isSaved) {
                             //Toast.makeText(MainActivity.this, "Image saved in " + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
-                            showAlert("WallPaper Saved ", saveToInternalStorage(imageBitmap, "Wall_"));
+                            //showAlert("WallPaper Saved ", saveToInternalStorage(imageBitmap, "Wall_"));
+                            saveToInternalStorage(imageBitmap, "Wall_");
                             //spaceNavigationView.setCentreButtonSelected();
                             //scheduleWallChangeJob(3600);
                             isSaved = true;
@@ -204,7 +193,8 @@ public class MainActivity extends AppCompatActivity
                         if (!isSaved) {
                             //Toast.makeText(MainActivity.this, "Image saved in reselected" + saveToInternalStorage(imageBitmap, "Wall_"), Toast.LENGTH_LONG).show();
                             //spaceNavigationView.setCentreButtonSelected();
-                            showAlert("WallPaper Saved ", saveToInternalStorage(imageBitmap, "Wall_"));
+                            //showAlert("WallPaper Saved ", saveToInternalStorage(imageBitmap, "Wall_"));
+                            saveToInternalStorage(imageBitmap, "Wall_");
                             isSaved = true;
                         }
                     }
@@ -608,35 +598,37 @@ public class MainActivity extends AppCompatActivity
         sharingIntent.setType("text/plain");
 
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Get Awsome Wallpaper and automaticall change wallpaper daily");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=app.studio.crafty.wallpapersplash.daily.dailywallpaper");
         startActivity(Intent.createChooser(sharingIntent, "Share via"));
 
     }
 
     private void onWallSendClick() {
         Intent share = new Intent(Intent.ACTION_SEND);
-        share.setType("image/jpeg");
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        File f = new File(Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name));
-        f.mkdirs();
-        f = new File(Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name) + File.separator + "Shared.jpg");
+        if (isStoragePermissionGranted()) {
+            share.setType("image/jpeg");
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            File f = new File(Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name));
+            f.mkdirs();
+            f = new File(Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name) + File.separator + "Shared.jpg");
 
-        try {
-            f.createNewFile();
-            FileOutputStream fo = new FileOutputStream(f);
-            fo.write(bytes.toByteArray());
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                f.createNewFile();
+                FileOutputStream fo = new FileOutputStream(f);
+                fo.write(bytes.toByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            share.putExtra(Intent.EXTRA_STREAM, Uri.parse(f.getPath()));
+            share.putExtra(Intent.EXTRA_TEXT, "Get Full HD WallPaper and auto - change wallpaper daily  \n https://play.google.com/store/apps/details?id=app.studio.crafty.wallpapersplash.daily.dailywallpaper");
+            startActivity(Intent.createChooser(share, "Share Image"));
         }
-        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(f.getPath()));
-        share.putExtra(Intent.EXTRA_TEXT, "Get Full HD WallPaper and auto - change wallpaper daily  \n https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
-        startActivity(Intent.createChooser(share, "Share Image"));
     }
 
     private void onRateUsClick() {
         try {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.studio.crafty.wallpapersplash.daily.dailywallpaper")));
         } catch (Exception e) {
 
         }
@@ -708,7 +700,7 @@ public class MainActivity extends AppCompatActivity
         Alerter.create(MainActivity.this)
                 .setTitle(s)
                 .setText(s1)
-                .setDuration(5000)
+                .setDuration(3000)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -760,37 +752,74 @@ public class MainActivity extends AppCompatActivity
 
 
     private String saveToInternalStorage(Bitmap bitmapImage, String filename) {
-        //get path to external storage (SD card)
-        String iconsStoragePath = Environment.getExternalStorageDirectory() + "/" + getString(R.string.app_name) + "/MyWallPaper/";
-        File sdIconStorageDir = new File(iconsStoragePath);
 
-        //create storage directories, if they don't exist
-        sdIconStorageDir.mkdirs();
+        if(isStoragePermissionGranted()) {
 
-        try {
-            String filePath = sdIconStorageDir.toString() + File.separator + filename + System.currentTimeMillis() + ".png";
-            FileOutputStream fileOutputStream = new FileOutputStream(filePath);
 
-            BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
+            //get path to external storage (SD card)
+            String iconsStoragePath = Environment.getExternalStorageDirectory() + "/Daily_Wallpaper" + "/MyWallPaper/";
+            File sdIconStorageDir = new File(iconsStoragePath);
 
-            //choose another format if PNG doesn't suit you
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            //create storage directories, if they don't exist
+            sdIconStorageDir.mkdirs();
+            try {
+                String filePath = sdIconStorageDir.toString() + File.separator + filename + System.currentTimeMillis() + ".png";
+                FileOutputStream fileOutputStream = new FileOutputStream(filePath);
 
-            bos.flush();
-            bos.close();
+                BufferedOutputStream bos = new BufferedOutputStream(fileOutputStream);
 
-        } catch (FileNotFoundException e) {
-            Log.w("TAG", "Error saving image file: " + e.getMessage());
-            return sdIconStorageDir.getPath();
-        } catch (IOException e) {
-            Log.w("TAG", "Error saving image file: " + e.getMessage());
-            return sdIconStorageDir.getPath();
+                //choose another format if PNG doesn't suit you
+                bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, bos);
+
+                bos.flush();
+                bos.close();
+
+            } catch (FileNotFoundException e) {
+                Log.w("TAG", "Error saving image file: " + e.getMessage());
+                return sdIconStorageDir.getPath();
+            } catch (IOException e) {
+                Log.w("TAG", "Error saving image file: " + e.getMessage());
+                return sdIconStorageDir.getPath();
+            }
+            isSaved = true;
+            showAlert("WallPaper Saved ",sdIconStorageDir.getAbsolutePath() );
+
+            return sdIconStorageDir.getAbsolutePath();
+
+        }else{
+            return "";
         }
-        isSaved = true;
 
 
-        return sdIconStorageDir.getAbsolutePath();
 
+    }
+
+    public  boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v(TAG,"Permission is granted");
+                return true;
+            } else {
+
+                Log.v(TAG,"Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG,"Permission is granted");
+            return true;
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
+            Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
+            //resume tasks needing this permission
+            saveToInternalStorage(imageBitmap, "Wall_");
+        }
     }
 
     public int getNavBarHeight(Context c) {
@@ -886,4 +915,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    public void openDrawerButtonClick(View view) {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.openDrawer(GravityCompat.START);
+    }
 }

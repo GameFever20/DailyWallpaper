@@ -2,18 +2,14 @@ package app.studio.crafty.wallpaper.daily.dailywallpaper;
 
 import android.app.Activity;
 import android.app.WallpaperManager;
-import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
-import com.tapadoo.alerter.Alerter;
 
 import java.io.IOException;
 

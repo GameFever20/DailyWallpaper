@@ -28,13 +28,14 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <!--<ImageView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="12dp"
         android:paddingTop="40dp"
-        android:src="@mipmap/ic_open_nav" />
--->
+        android:src="@mipmap/ic_open_nav"
+        android:onClick="openDrawerButtonClick"
+        />
 
     <LinearLayout
         android:id="@+id/space_viewGroup_layout"
