@@ -239,7 +239,10 @@ int time = 3600;
         int checkNum = pref.getInt("RateUs", 0); // getting Integer
 
         if (checkNum == 5) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper"));
+            final String appPackageName = this.getPackageName();
+            String link = "https://play.google.com/store/apps/details?id=" + appPackageName;
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
 
             PendingIntent resultPendingIntent =
                     PendingIntent.getActivity(
@@ -257,7 +260,7 @@ int time = 3600;
             mBuilder.setContentIntent(resultPendingIntent);
 
 
-            int mNotificationId = 123;
+            int mNotificationId = 124;
 // Gets an instance of the NotificationManager service
             NotificationManager mNotifyMgr =
                     (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
@@ -269,9 +272,12 @@ int time = 3600;
 
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType("text/plain");
+            final String appPackageName = this.getPackageName();
+            String link = "https://play.google.com/store/apps/details?id=" + appPackageName;
+
 
             sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Get Awsome Wallpaper and automaticall change wallpaper daily");
-            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, link);
 
 
             PendingIntent resultPendingIntent =
@@ -290,7 +296,7 @@ int time = 3600;
             mBuilder.setContentIntent(resultPendingIntent);
 
 
-            int mNotificationId = 123;
+            int mNotificationId = 125;
 // Gets an instance of the NotificationManager service
             NotificationManager mNotifyMgr =
                     (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);

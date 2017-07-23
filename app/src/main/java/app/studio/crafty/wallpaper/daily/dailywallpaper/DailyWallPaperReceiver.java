@@ -114,7 +114,7 @@ public class DailyWallPaperReceiver extends BroadcastReceiver {
 
         } else if (checkNum == 15) {
 
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper"));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=app.studio.crafty.wallpapersplash.daily.dailywallpaper"));
 
             PendingIntent resultPendingIntent =
                     PendingIntent.getActivity(
@@ -146,7 +146,7 @@ public class DailyWallPaperReceiver extends BroadcastReceiver {
             sharingIntent.setType("text/plain");
 
             sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Get Awsome Wallpaper and automaticall change wallpaper daily");
-            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=app.studio.crafty.wallpaper.daily.dailywallpaper");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=app.studio.crafty.wallpapersplash.daily.dailywallpaper");
 
 
             PendingIntent resultPendingIntent =

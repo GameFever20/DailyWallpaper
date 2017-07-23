@@ -716,7 +716,7 @@ public class MainActivity extends AppCompatActivity
     private void checkAdShown() {
 
         try {
-            if (showAdCount > 4) {
+            if (showAdCount > 2) {
 
                 if (mInterstitialAd.isLoaded()) {
                     mInterstitialAd.show();
